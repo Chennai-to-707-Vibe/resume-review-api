@@ -57,19 +57,24 @@ router.post("/login", async (req, res) => {
     }
 });
 
-// Google OAuth Login
-router.get(
-    "/google",
-    passport.authenticate("google", { scope: ["profile", "email"], prompt: "select_account" })
-);
+// Google OAuth - Send Auth Link Instead of Redirecting
+router.get("/google", (req, res) => {
+    const authUrl = `https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.BASE_URL}/auth/google/callback&scope=email%20profile`;
+    res.json({ authUrl });
+});
 
-// Google OAuth Callback
+// Google OAuth Callback - Return Token Instead of Redirecting
 router.get(
     "/google/callback",
-    passport.authenticate("google", { failureRedirect: "/" }),
+    passport.authenticate("google", { session: false }),
     (req, res) => {
         const token = jwt.sign({ id: req.user._id }, JWT_SECRET, { expiresIn: "1h" });
-        res.json({ message: "Google Authentication Successful", token, user: req.user });
+
+        res.json({
+            message: "Google Authentication Successful",
+            token,
+            user: req.user,
+        });
     }
 );
 

@@ -9,7 +9,7 @@ const options = {
             version: "1.0.0",
             description: "Authentication API using JWT",
         },
-        servers: [{ url: "http://localhost:5000" }],
+        servers: [{ url: "http://localhost:6000" }],
     },
     apis: ["./routes/authRoutes.js"],
 };
